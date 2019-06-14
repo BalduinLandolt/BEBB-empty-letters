@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+    <!-- root element -->
+    <xs:element name="letter">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="metadata" type="metadata_element"/>
+                <xs:element name="persons" type="persons_element"/>
+                <xs:element name="images" type="images_element" minOccurs="0"/>
+                <xs:element name="text" type="text_element"/>
+            </xs:sequence>
+            <!-- id of the page in the wiki database (primary key) -->
+            <!-- not necessary, as these files don't come from wiki -->
+            <!-- <xs:attribute name="page_id" type="xs:integer" use="required"/> -->
+            <xs:attribute name="title" type="title_attribute" use="required"/>
+            <xs:attribute name="catalogue_id" type="catalogue_id_attribute" use="required"/>
+            <xs:attribute name="date" type="date_attribute" use="required"/>
+        </xs:complexType>
+    </xs:element>
+    
+    <!-- title of the letter (last segment in Wiki-URL ) -->
+    <xs:simpleType name="title_attribute">
+        <xs:restriction base="xs:string">
+            <!-- TODO: Should the day be omitted or be represented by "00"? -->
+            <xs:pattern value="\d{4}-\d{2}(-\d{2})?_.+-.+"/>
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <!-- valid university library catalogie id --> 
+    <xs:simpleType name="catalogue_id_attribute">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="000\d{6}"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <!-- standardized Gregorian calendar date with year, month, or day precision -->
+    <!-- TODO: do we need that or is the date in the file name sufficient? -->
+    <xs:simpleType name="date_attribute">
+        <xs:restriction base="xs:string">
+            <!-- YYYY(.MM(.DD)) -->
+            <xs:pattern value="\d{4}(\.\d{2}(\.\d{2})?)?"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <!-- author, recipient, and mentioned persons in a letter -->
+    <xs:complexType name="persons_element">
+        <xs:sequence>
+            <xs:element name="author" type="person_list_element" maxOccurs="1" minOccurs="0"/>
+            <xs:element name="recipient" type="person_list_element" maxOccurs="1" minOccurs="0"/>
+            <xs:element name="mentioned" type="person_list_element" maxOccurs="1" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- a list of persons --> 
+    <xs:complexType name="person_list_element">
+        <xs:sequence>
+            <xs:element name="person" type="person_element" minOccurs="1" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <!-- Information about a person (author, recipient, or mentioned person) -->
+    <xs:complexType name="person_element">
+        <xs:sequence>
+            <xs:element name="gnd" type="gnd_element" />
+            <!-- Name of the person (family name, given name) -->
+            <xs:element name="name"/>
+            <!-- year of birth and year of death if known -->
+            <xs:element name="date" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <!-- GND/IAF identifier or "no_GND" if not existent or known -->
+    <xs:simpleType name="gnd_element">
+        <!-- formal validation -->
+        <xs:restriction base="xs:string">
+            <!-- TODO: some GNDs are missing (DE-588) -->
+            <xs:pattern value="\(DE-588\).+|no_GND"/>
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <!-- list of facsimiles referred to in the transcription -->
+    <xs:complexType name="images_element">
+        <xs:sequence maxOccurs="unbounded" minOccurs="0">
+            <xs:element name="facsimile" type="facsimile_element"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- transcription -->
+    <xs:complexType name="text_element">
+        <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <!-- a transcription consists of one or several paragraphs -->
+            <xs:element name="p" type="paragraph_element"/>
+        </xs:choice>
+    </xs:complexType>
+
+    <!-- a paragraph -->
+    <xs:complexType name="paragraph_element" mixed="true">
+        <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:element name="facsimile" type="facsimile_element"/>
+            <xs:element name="ref" type="ref_element"/>
+            <xs:element name="i" type="italic_element"/>
+            <xs:element name="u" type="underline_element"/>
+            <xs:element name="b" type="bold_element"/>
+            <xs:element name="sup" type="sup_element"/>
+            <xs:element name="sub" type="sup_element"/>
+            <xs:element name="math" type="math_element"/>
+            <xs:element name="a" type="anchor_element"/>
+            <xs:element name="entity" type="entity_element"/>
+            <xs:element name="figure" type="figure_element"/>
+            <xs:element name="table" type="table_element"/>
+            <xs:element name="dl" type="dl_element"/>
+            <xs:element name="br"/>
+            <xs:element name="hr"/>
+            <xs:element name="pb"/>
+        </xs:choice>
+    </xs:complexType>
+
+    <!-- a footnote (embedded in the text, but rendered at the end of the text in HTML) -->
+    <xs:complexType name="ref_element" mixed="true">
+        <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:element name="i" type="italic_element"/>
+            <xs:element name="sup" type="sup_element"/>
+            <xs:element name="sub" type="sup_element"/>
+            <xs:element name="math" type="math_element"/>
+            <xs:element name="a" type="anchor_element"/>
+            <xs:element name="entity" type="entity_element"/>
+            <xs:element name="br"/>
+            <xs:element name="table" type="table_element"/>
+            <xs:element name="u" type="underline_element"/>
+            <xs:element name="b" type="bold_element"/>
+            <xs:element name="facsimile" type="facsimile_element"/>
+            <xs:element name="figure" type="figure_element"/>
+        </xs:choice>
+    </xs:complexType>
+
+    <!-- text rendered as italic -->
+    <xs:complexType name="italic_element" mixed="true">
+        <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:element name="sup" type="sup_element"/>
+            <xs:element name="ref" type="ref_element"/>
+            <xs:element name="a" type="anchor_element"/>
+            <xs:element name="math" type="math_element"/>
+            <xs:element name="facsimile" type="facsimile_element"/>
+            <xs:element name="u" type="underline_element"/>
+            <xs:element name="sub" type="sup_element"/>
+        </xs:choice>
+    </xs:complexType>
+
+    <!-- text rendered as underline -->
+    <xs:complexType name="underline_element" mixed="true"/>
+
+    <!-- text rendered as bold -->
+    <xs:complexType name="bold_element" mixed="true"/>
+
+    <!-- text rendered as subscript-->
+    <xs:complexType name="sub_element" mixed="true"/>
+
+    <!-- text rendered as superscript -->
+    <xs:complexType name="sup_element" mixed="true"/>
+
+    <!-- mathematical formula as LaTeX -->
+    <xs:complexType name="math_element" mixed="true"/>
+
+    <!-- facsimile referred to in the text (indicates pacge break) -->
+    <xs:complexType name="facsimile_element">
+        <xs:attribute name="src" use="required">
+            <xs:simpleType>
+                <xs:restriction base="xs:anyURI">
+                    <xs:minLength value="1"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
+    </xs:complexType>
+    
+    <!-- figure referred to in the text -->
+    <xs:complexType name="figure_element">
+        <xs:attribute name="src" use="required">
+            <xs:simpleType>
+                <xs:restriction base="xs:anyURI">
+                    <xs:minLength value="1"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
+    </xs:complexType>
+
+    <!-- external hyperlink -->
+    <xs:complexType name="anchor_element" mixed="true">
+        <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:element name="i" type="italic_element"/>
+        </xs:choice>
+        <xs:attribute name="href" type="xs:anyURI" use="required"/>
+        <xs:attribute name="target" type="xs:string" use="optional"/>
+    </xs:complexType>
+
+    <!-- internal link (standoff link) -->
+    <xs:complexType name="entity_element" mixed="true">
+        <xs:attribute name="ref" type="xs:anyURI" use="required"/>
+    </xs:complexType>
+    
+    <!-- tabular structure -->
+    <xs:complexType name="table_element">
+        <xs:sequence minOccurs="1" maxOccurs="unbounded">
+            <xs:element name="tr" type="row_element"/>
+        </xs:sequence>
+        <xs:attribute name="border" type="xs:string"/>
+        <xs:attribute name="cellpadding" type="xs:string"/>
+    </xs:complexType>
+
+    <!-- table row -->
+    <xs:complexType name="row_element">
+        <xs:sequence minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="td" type="cell_element"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- table cell -->
+    <xs:complexType name="cell_element" mixed="true">
+        <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:element name="ref" type="ref_element"/>
+            <xs:element name="i" type="italic_element"/>
+            <xs:element name="sup" type="sup_element"/>
+        </xs:choice>
+        <xs:attribute name="width" type="xs:string"/>
+        <xs:attribute name="align" type="xs:string"/>
+        <xs:attribute name="valign" type="xs:string"/>
+        <xs:attribute name="rowspan" type="xs:integer"/>
+        <xs:attribute name="colspan" type="xs:integer"/>
+    </xs:complexType>
+
+    <!-- definition list -->
+    <xs:complexType name="dl_element">
+        <xs:sequence minOccurs="1" maxOccurs="unbounded">
+            <xs:element name="dd" type="dd_element"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- definition list element -->
+    <xs:complexType name="dd_element" mixed="true"/>
+
+    <xs:complexType name="metadata_element">
+        <xs:sequence minOccurs="1" maxOccurs="unbounded">
+            <xs:element name="description" type="description_element" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="creationform" type="creationform_element" minOccurs="0" maxOccurs="1" />
+            <xs:element name="creationplace" type="creationplace_element" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="footnote" type="footnote_element" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="contentinfo" type="contentinfo_element" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="physicaldescription" type="physicaldescription_element" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="accompanyingmaterial" type="accompanyingmaterial_element" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="reproductioninfo" type="reproductioninfo_element" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="language" type="language_element" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="bernoulliworkreference" type="bernoulliworkreference_element" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="emanuscriptalink" type="emanuscriptalink_element" minOccurs="0" maxOccurs="1"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <xs:complexType name="description_element">
+        <xs:sequence minOccurs="1" maxOccurs="1">
+            <xs:element name="title" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="author" minOccurs="0" maxOccurs="1"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <xs:complexType name="creationform_element" mixed="true"/>
+    
+    <xs:complexType name="footnote_element" mixed="true"/>
+    
+    <xs:complexType name="contentinfo_element" mixed="true"/>
+    
+    <xs:complexType name="creationplace_element">
+        <xs:sequence minOccurs="1" maxOccurs="1">
+            <xs:element name="place" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="gnd" minOccurs="0" maxOccurs="1"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <xs:complexType name="physicaldescription_element">
+        <xs:sequence minOccurs="1" maxOccurs="1">
+            <xs:element name="amount" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="format" minOccurs="0" maxOccurs="1"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <xs:complexType name="accompanyingmaterial_element" mixed="true"/>
+    
+    <xs:complexType name="reproductioninfo_element">
+        <xs:sequence minOccurs="1" maxOccurs="1">
+            <xs:element name="type" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="place" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="institution" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="year" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="additional" minOccurs="0" maxOccurs="1"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <xs:complexType name="language_element" mixed="true"/>
+    
+    <xs:complexType name="bernoulliworkreference_element" mixed="true"/>
+    
+    <xs:complexType name="emanuscriptalink_element" mixed="true"/>
+
+</xs:schema>
