@@ -1,3 +1,5 @@
+import os
+import requests
 import alephmarcreader
 
 
@@ -11,7 +13,9 @@ class BEBBemptyLetters:
         numbers = self.__get_numbers
         print('Got Numbers: {}'.format(len(numbers)))
         alephX_dict = self.__load_metadata(numbers)
-        print('Cached AlephX files: {}'.format(len(alephX_dict)))
+        print('Downloaded AlephX files: {}'.format(self._loaded))
+        print('Cached AlephX files: {}'.format(self._cached))
+        print('Total AlephX files: {}'.format(len(alephX_dict)))
         res = self.__generate_XMLs(alephX_dict)
         print('Created XML files: {}'.format(res))
         print('Finished.')
@@ -42,14 +46,11 @@ class BEBBemptyLetters:
         res = []
         for a in all:
             if a not in ignore:
-                res.append(a)
+                res.append(a)  # TODO: use filter()?
 
-
-        # TODO: get all numbers
-        # TODO: ignore ignorables, if any
         return res
 
-    def __load_metadata(self, numbers, overwrite = False):
+    def __load_metadata(self, numbers, overwrite=False):
         """
         Load and cache a number of AlephX files.
 
@@ -68,7 +69,14 @@ class BEBBemptyLetters:
         """
 
         res = dict()
-        # TODO: implement
+
+        self._cached = 0
+        self._loaded = 0
+
+        for nb in numbers:
+            alephx = self.__get_alephx(nb, overwrite)
+            res[nb] = alephx
+
         return res
 
     def __generate_XMLs(self, alephX_dict):
@@ -82,6 +90,38 @@ class BEBBemptyLetters:
         res = 0
         # TODO: implement
         return res
+
+    def __get_alephx(self, system_number, overwrite):
+        path = "cache/" + system_number + ".xml"
+
+        if os.path.isfile(path):
+            if overwrite:
+                os.remove(path)
+            else:
+                return self.__load_cached(path)
+
+        alephx = self.__load_from_alephx(system_number)
+        with open(path, 'w', encoding='utf-8') as file:
+            file.write(alephx)
+
+        return alephx
+
+    def __load_cached(self, path):
+        with open(path, 'r', encoding='utf-8') as file:
+            data = file.read()
+        self._cached = self._cached + 1
+        return data
+
+    def __load_from_alephx(self, system_number):
+        url = 'https://www.ub.unibas.ch/cgi-bin/ibb/alephx?op=find-doc&doc-num=' + system_number + '&base=dsv05'
+        request = requests.get(url)
+        if request.status_code == 200:
+            # TODO: Error handling
+            pass
+
+        self._loaded = self._loaded + 1
+        print('    loaded: {}'.format(system_number))
+        return request.text
 
 
 if __name__ == "__main__":
