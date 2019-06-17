@@ -8,7 +8,7 @@ class BEBBemptyLetters:
         Method that organizes all tasks to generate the empty letter XML files.
         """
         print('Starting...')
-        numbers = self.__get_numbers()
+        numbers = self.__get_numbers
         print('Got Numbers: {}'.format(len(numbers)))
         alephX_dict = self.__load_metadata(numbers)
         print('Cached AlephX files: {}'.format(len(alephX_dict)))
@@ -16,6 +16,7 @@ class BEBBemptyLetters:
         print('Created XML files: {}'.format(res))
         print('Finished.')
 
+    @property
     def __get_numbers(self):
         """
         Get all system numbers to work with.
@@ -26,7 +27,24 @@ class BEBBemptyLetters:
         :return: [str]: A list of system numbers.
         """
 
+        all = []
+        with open("input/all_numbers.txt") as f:
+            all = f.readlines()
+        all = list(map(lambda l: l.strip(), all))
+        print('    All system numbers: {}'.format(len(all)))
+
+        ignore = []
+        with open("input/exclude.txt") as f:
+            ignore = f.readlines()
+        ignore = list(map(lambda l: l.strip(), ignore))
+        print('    System numbers to ignore: {}'.format(len(ignore)))
+
         res = []
+        for a in all:
+            if a not in ignore:
+                res.append(a)
+
+
         # TODO: get all numbers
         # TODO: ignore ignorables, if any
         return res
