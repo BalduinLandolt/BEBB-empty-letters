@@ -12,11 +12,11 @@ class BEBBemptyLetters:
         print('Starting...')
         numbers = self.__get_numbers
         print('Got Numbers: {}'.format(len(numbers)))
-        alephX_dict = self.__load_metadata(numbers)
+        alephx_dict = self.__load_metadata(numbers)
         print('Downloaded AlephX files: {}'.format(self._loaded))
         print('Cached AlephX files: {}'.format(self._cached))
-        print('Total AlephX files: {}'.format(len(alephX_dict)))
-        res = self.__generate_XMLs(alephX_dict)
+        print('Total AlephX files: {}'.format(len(alephx_dict)))
+        res = self.__generate_XMLs(alephx_dict)
         print('Created XML files: {}'.format(res))
         print('Finished.')
 
@@ -31,11 +31,10 @@ class BEBBemptyLetters:
         :return: [str]: A list of system numbers.
         """
 
-        all = []
         with open("input/all_numbers.txt") as f:
-            all = f.readlines()
-        all = list(map(lambda l: l.strip(), all))
-        print('    All system numbers: {}'.format(len(all)))
+            all_numbers = f.readlines()
+        all_numbers = list(map(lambda l: l.strip(), all_numbers))
+        print('    All system numbers: {}'.format(len(all_numbers)))
 
         ignore = []
         with open("input/exclude.txt") as f:
@@ -43,7 +42,7 @@ class BEBBemptyLetters:
         ignore = list(map(lambda l: l.strip(), ignore))
         print('    System numbers to ignore: {}'.format(len(ignore)))
 
-        res = list(filter(lambda n: n not in ignore, all))
+        res = list(filter(lambda n: n not in ignore, all_numbers))
 
         return res
 
