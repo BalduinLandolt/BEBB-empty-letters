@@ -107,9 +107,10 @@ class BEBBemptyLetters:
         return alephx
 
     def __load_cached(self, path):
+        with open(path, 'r', encoding='utf-8') as file:
+            data = file.read()
         self._cached = self._cached + 1
-        # TODO implement
-        return ""
+        return data
 
     def __load_from_alephx(self, system_number):
         url = 'https://www.ub.unibas.ch/cgi-bin/ibb/alephx?op=find-doc&doc-num=' + system_number + '&base=dsv05'
