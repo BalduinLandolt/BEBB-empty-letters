@@ -2,6 +2,7 @@ import os
 import requests
 import alephmarcreader
 
+# TODO: Write readme.md
 
 class BEBBemptyLetters:
 
@@ -85,6 +86,10 @@ class BEBBemptyLetters:
         """
         res = 0
         # TODO: implement
+        #       - add template xml to ./input/
+        #       - load template with lxml
+        #       - modify this etree according to necessities
+        #       - save to ./output/
         return res
 
     def __get_alephx(self, system_number, overwrite):
