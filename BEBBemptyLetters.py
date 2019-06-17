@@ -44,9 +44,6 @@ class BEBBemptyLetters:
             if a not in ignore:
                 res.append(a)
 
-
-        # TODO: get all numbers
-        # TODO: ignore ignorables, if any
         return res
 
     def __load_metadata(self, numbers, overwrite = False):
