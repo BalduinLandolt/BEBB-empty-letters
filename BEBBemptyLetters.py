@@ -43,10 +43,7 @@ class BEBBemptyLetters:
         ignore = list(map(lambda l: l.strip(), ignore))
         print('    System numbers to ignore: {}'.format(len(ignore)))
 
-        res = []
-        for a in all:
-            if a not in ignore:
-                res.append(a)  # TODO: use filter()?
+        res = list(filter(lambda n: n not in ignore, all))
 
         return res
 
