@@ -1,5 +1,5 @@
 import os
-
+import requests
 import alephmarcreader
 
 
@@ -46,11 +46,11 @@ class BEBBemptyLetters:
         res = []
         for a in all:
             if a not in ignore:
-                res.append(a)
+                res.append(a)  # TODO: use filter()?
 
         return res
 
-    def __load_metadata(self, numbers, overwrite = False):
+    def __load_metadata(self, numbers, overwrite=False):
         """
         Load and cache a number of AlephX files.
 
@@ -112,9 +112,14 @@ class BEBBemptyLetters:
         return ""
 
     def __load_from_alephx(self, system_number):
+        request = requests.get("https://www.ub.unibas.ch/cgi-bin/ibb/alephx?op=find-doc&doc-num=000055275&base=dsv05")
+        if request.status_code == 200:
+            # TODO: Error handling
+            pass
+
         self._loaded = self._loaded + 1
-        # TODO implement
-        return ""
+        print('    loaded: {}'.format(system_number))
+        return request.text
 
 
 if __name__ == "__main__":
