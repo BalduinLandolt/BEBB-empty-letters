@@ -112,9 +112,12 @@ class BEBBemptyLetters:
     def __load_from_alephx(self, system_number):
         url = 'https://www.ub.unibas.ch/cgi-bin/ibb/alephx?op=find-doc&doc-num=' + system_number + '&base=dsv05'
         request = requests.get(url)
-        if request.status_code == 200:
-            # TODO: Error handling
-            pass
+        if request.status_code != 200:
+            raise Exception('Error when requesting {}: Could not connect to AlephX. Status code: {}. '
+                            '(NB: Are you in VPN?)'.format(system_number, request.status_code))
+        if request.text.startswith('<?xml version = \"1.0\" encoding = \"UTF-8\"?>\n<find-doc>\n'
+                                   '<error>Error reading document</error>'):
+            raise Exception('Error when requesting {}: No such file found.'.format(system_number))
 
         self._loaded = self._loaded + 1
         print('    loaded: {}'.format(system_number))
