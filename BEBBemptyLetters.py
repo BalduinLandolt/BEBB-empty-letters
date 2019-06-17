@@ -65,7 +65,11 @@ class BEBBemptyLetters:
         """
 
         res = dict()
-        # TODO: implement
+
+        for nb in numbers:
+            alephx = self.__get_alephx(nb, overwrite)
+            res[nb] = alephx
+
         return res
 
     def __generate_XMLs(self, alephX_dict):
@@ -79,6 +83,11 @@ class BEBBemptyLetters:
         res = 0
         # TODO: implement
         return res
+
+    def __get_alephx(self, nb, overwrite):
+
+        # TODO: implement
+        pass
 
 
 if __name__ == "__main__":
