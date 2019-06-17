@@ -1,3 +1,5 @@
+import os
+
 import alephmarcreader
 
 
@@ -11,7 +13,9 @@ class BEBBemptyLetters:
         numbers = self.__get_numbers
         print('Got Numbers: {}'.format(len(numbers)))
         alephX_dict = self.__load_metadata(numbers)
-        print('Cached AlephX files: {}'.format(len(alephX_dict)))
+        print('Downloaded AlephX files: {}'.format(self._loaded))
+        print('Cached AlephX files: {}'.format(self._cached))
+        print('Total AlephX files: {}'.format(len(alephX_dict)))
         res = self.__generate_XMLs(alephX_dict)
         print('Created XML files: {}'.format(res))
         print('Finished.')
@@ -66,6 +70,9 @@ class BEBBemptyLetters:
 
         res = dict()
 
+        self._cached = 0
+        self._loaded = 0
+
         for nb in numbers:
             alephx = self.__get_alephx(nb, overwrite)
             res[nb] = alephx
@@ -84,10 +91,30 @@ class BEBBemptyLetters:
         # TODO: implement
         return res
 
-    def __get_alephx(self, nb, overwrite):
+    def __get_alephx(self, system_number, overwrite):
+        path = "cache/" + system_number + ".xml"
 
-        # TODO: implement
-        pass
+        if os.path.isfile(path):
+            if overwrite:
+                os.remove(path)
+            else:
+                return self.__load_cached(path)
+
+        alephx = self.__load_from_alephx(system_number)
+        with open(path, 'w', encoding='utf-8') as file:
+            file.write(alephx)
+
+        return alephx
+
+    def __load_cached(self, path):
+        self._cached = self._cached + 1
+        # TODO implement
+        return ""
+
+    def __load_from_alephx(self, system_number):
+        self._loaded = self._loaded + 1
+        # TODO implement
+        return ""
 
 
 if __name__ == "__main__":
