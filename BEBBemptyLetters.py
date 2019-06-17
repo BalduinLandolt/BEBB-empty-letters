@@ -112,7 +112,8 @@ class BEBBemptyLetters:
         return ""
 
     def __load_from_alephx(self, system_number):
-        request = requests.get("https://www.ub.unibas.ch/cgi-bin/ibb/alephx?op=find-doc&doc-num=000055275&base=dsv05")
+        url = 'https://www.ub.unibas.ch/cgi-bin/ibb/alephx?op=find-doc&doc-num=' + system_number + '&base=dsv05'
+        request = requests.get(url)
         if request.status_code == 200:
             # TODO: Error handling
             pass
