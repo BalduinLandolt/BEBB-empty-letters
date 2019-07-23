@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<letter xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="../Schema_and_DTD/letter.xsd"
+        title=""
+        catalogue_id=""
+        date="">
+   <metadata>
+      <creationplace>
+         <place></place>
+         <gnd></gnd>
+      </creationplace>
+      <footnote></footnote>
+      <shelfmark></shelfmark>
+   </metadata>
+   <persons>
+      <author>
+         <person>
+            <gnd></gnd>
+            <name></name>
+            <date></date>
+         </person>
+      </author>
+      <recipient>
+         <person>
+            <gnd></gnd>
+            <name></name>
+            <date></date>
+         </person>
+      </recipient>
+      <mentioned>
+         <person>
+            <gnd></gnd>
+            <name></name>
+            <date></date>
+         </person>
+      </mentioned>
+   </persons>
+   
+   <images/>
+   
+   <text/>
+   
+</letter>
