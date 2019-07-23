@@ -1,6 +1,7 @@
 import os
 import requests
 import alephmarcreader
+from lxml import etree
 
 # TODO: Write readme.md
 
@@ -11,9 +12,9 @@ class BEBBemptyLetters:
         Method that organizes all tasks to generate the empty letter XML files.
         """
         print('Starting...')
-        numbers = self.__get_numbers
-        print('Got Numbers: {}'.format(len(numbers)))
-        alephx_dict = self.__load_metadata(numbers)
+        self._numbers = self.__get_numbers
+        print('Got Numbers: {}'.format(len(self._numbers)))
+        alephx_dict = self.__load_metadata(self._numbers)
         print('Downloaded AlephX files: {}'.format(self._loaded))
         print('Cached AlephX files: {}'.format(self._cached))
         print('Total AlephX files: {}'.format(len(alephx_dict)))
@@ -85,9 +86,12 @@ class BEBBemptyLetters:
         :return: int: number of files created.
         """
         res = 0
+
+        template = etree.parse('input/sample.xml')
+
+        #print(etree.tostring(template.getroot(), pretty_print=True).decode('utf-8'))
+
         # TODO: implement
-        #       - add template xml to ./input/
-        #       - load template with lxml
         #       - modify this etree according to necessities
         #       - save to ./output/
         return res
@@ -124,8 +128,13 @@ class BEBBemptyLetters:
             raise Exception('Error when requesting {}: No such file found.'.format(system_number))
 
         self._loaded = self._loaded + 1
-        print('    loaded: {}'.format(system_number))
+        print('    loaded: {} ({})'.format(system_number, self.__get_progress()))
         return request.text
+
+    def __get_progress(self):
+        f_prog = (self._cached + self._loaded) / len(self._numbers)
+        prog = u'{}%'.format(round(f_prog * 100, 2))
+        return prog
 
 
 if __name__ == "__main__":
