@@ -88,8 +88,8 @@ class BEBBemptyLetters:
         res = 0
         template = etree.tostring(etree.parse('input/sample.xml'))
 
-        for sys_no, alephx_path in alephX_dict:
-            if self.__generate_XML(sys_no, alephx_path, etree.fromstring(template)):
+        for sys_no in alephX_dict:
+            if self.__generate_XML(sys_no, alephX_dict[sys_no], etree.fromstring(template)):
                 res = res + 1
 
         #print(etree.tostring(template.getroot(), pretty_print=True).decode('utf-8'))
@@ -100,13 +100,22 @@ class BEBBemptyLetters:
         return res
 
     def __generate_XML(self, system_number, alephx_path, xml_template):
-        tree = xml_template
+        root = xml_template
+        reader = alephmarcreader.alephxreader.AlephXReader(alephx_path)
 
+        root.set('catalogue_id', system_number)
 
+        tree = etree.ElementTree(root)
+        with open('output/xml/test_xml.xml', 'wb') as file: # TODO: make path dynamic!
+            tree.write(file, pretty_print=True, encoding='utf-8', xml_declaration=True)
 
+        #print(etree.tostring(tree))
 
         # TODO: implement
-        return False
+        #       - title
+        #       - ...
+
+        return True
 
     def __get_alephx_path(self, system_number, overwrite):
         path = "cache/" + system_number + ".xml"
