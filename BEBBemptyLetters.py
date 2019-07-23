@@ -86,8 +86,11 @@ class BEBBemptyLetters:
         :return: int: number of files created.
         """
         res = 0
+        template = etree.tostring(etree.parse('input/sample.xml'))
 
-        template = etree.parse('input/sample.xml')
+        for sys_no, alephx_str in alephX_dict:
+            if self.__generate_XML(sys_no, alephx_str, etree.fromstring(template)):
+                res = res + 1
 
         #print(etree.tostring(template.getroot(), pretty_print=True).decode('utf-8'))
 
@@ -95,6 +98,13 @@ class BEBBemptyLetters:
         #       - modify this etree according to necessities
         #       - save to ./output/
         return res
+
+    def __generate_XML(self, system_number, alephx_string, xml_template):
+        tree = xml_template
+
+
+        # TODO: implement
+        return False
 
     def __get_alephx(self, system_number, overwrite):
         path = "cache/" + system_number + ".xml"
