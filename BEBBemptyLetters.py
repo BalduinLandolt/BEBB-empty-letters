@@ -62,7 +62,7 @@ class BEBBemptyLetters:
         :param [str] numbers: A list of system numbers.
         :param bool overwrite: True, to force reload already cached meta data; false by default.
 
-        :return: dict: A dict, pairing system numbers and strings of loaded AlephX files
+        :return: dict: A dict, pairing system numbers and paths to loaded AlephX files
                 (both from AlephX and from cache).
         """
 
@@ -72,8 +72,8 @@ class BEBBemptyLetters:
         self._loaded = 0
 
         for nb in numbers:
-            alephx = self.__get_alephx(nb, overwrite)
-            res[nb] = alephx
+            alephx_file_path = self.__get_alephx_path(nb, overwrite)
+            res[nb] = alephx_file_path
 
         return res
 
@@ -81,15 +81,15 @@ class BEBBemptyLetters:
         """
         Generate empty XML letters from alephX meta data.
 
-        :param dict alephX_dict: A dictionary with system numbers as keys and alephX strings as values.
+        :param dict alephX_dict: A dictionary with system numbers as keys and paths to cached alephX files as values.
 
         :return: int: number of files created.
         """
         res = 0
         template = etree.tostring(etree.parse('input/sample.xml'))
 
-        for sys_no, alephx_str in alephX_dict:
-            if self.__generate_XML(sys_no, alephx_str, etree.fromstring(template)):
+        for sys_no, alephx_path in alephX_dict:
+            if self.__generate_XML(sys_no, alephx_path, etree.fromstring(template)):
                 res = res + 1
 
         #print(etree.tostring(template.getroot(), pretty_print=True).decode('utf-8'))
@@ -99,28 +99,31 @@ class BEBBemptyLetters:
         #       - save to ./output/
         return res
 
-    def __generate_XML(self, system_number, alephx_string, xml_template):
+    def __generate_XML(self, system_number, alephx_path, xml_template):
         tree = xml_template
+
+
 
 
         # TODO: implement
         return False
 
-    def __get_alephx(self, system_number, overwrite):
+    def __get_alephx_path(self, system_number, overwrite):
         path = "cache/" + system_number + ".xml"
 
         if os.path.isfile(path):
             if overwrite:
                 os.remove(path)
             else:
-                return self.__load_cached(path)
+                return path
 
         alephx = self.__load_from_alephx(system_number)
         with open(path, 'w', encoding='utf-8') as file:
             file.write(alephx)
 
-        return alephx
+        return path
 
+    # TODO: unused? remove if so
     def __load_cached(self, path):
         with open(path, 'r', encoding='utf-8') as file:
             data = file.read()
