@@ -106,7 +106,8 @@ class BEBBemptyLetters:
         root.set('catalogue_id', system_number)
 
         tree = etree.ElementTree(root)
-        with open('output/xml/test_xml.xml', 'wb') as file: # TODO: make path dynamic!
+        file_name = system_number + '.xml'
+        with open('output/xml/' + file_name, 'wb') as file:
             tree.write(file, pretty_print=True, encoding='utf-8', xml_declaration=True)
 
         #print(etree.tostring(tree))
@@ -133,11 +134,11 @@ class BEBBemptyLetters:
         return path
 
     # TODO: unused? remove if so
-    def __load_cached(self, path):
-        with open(path, 'r', encoding='utf-8') as file:
-            data = file.read()
-        self._cached = self._cached + 1
-        return data
+    # def __load_cached(self, path):
+    #     with open(path, 'r', encoding='utf-8') as file:
+    #         data = file.read()
+    #     self._cached = self._cached + 1
+    #     return data
 
     def __load_from_alephx(self, system_number):
         url = 'https://www.ub.unibas.ch/cgi-bin/ibb/alephx?op=find-doc&doc-num=' + system_number + '&base=dsv05'
