@@ -101,11 +101,9 @@ class BEBBemptyLetters:
     def __generate_XML(self, system_number, alephx_path):
         reader = alephmarcreader.alephxreader.AlephXReader(alephx_path)
         root = etree.Element("letter")
+
         metadata = etree.Element('metadata')
         root.append(metadata)
-        persons = etree.Element('persons')
-        root.append(persons)
-        # TODO: maybe add image and text tag?
 
         root.set('catalogue_id', system_number)
         root.set('date', reader.get_standardized_date()[0].get_standardized_date_string_KNORA()) # TODO: avoid potential array index out of bounds
@@ -120,6 +118,12 @@ class BEBBemptyLetters:
                 gnd.text = plc.gnd
             creation_place.append(gnd)
             metadata.append(creation_place)
+
+        for ftn in reader.get_general_remarks():
+            footnote = etree.Element('footnote')
+            if ftn:
+                footnote.text = ftn
+                metadata.append(footnote)
 
         for shm in reader.get_shelfmark():
             shelfmark = etree.Element('shelfmark')
@@ -140,6 +144,30 @@ class BEBBemptyLetters:
                 identifier.text = shm.identifier
                 shelfmark.append(identifier)
             metadata.append(shelfmark)
+
+        persons = etree.Element('persons')
+        root.append(persons)
+
+        author = etree.Element('author')
+        for ath in reader.get_author():
+            person = etree.Element('person')
+            if ath.gnd:
+                gnd = etree.Element('gnd')
+                gnd.text = ath.gnd
+                person.append(gnd)
+            if ath.name:
+                name = etree.Element('name')
+                name.text = ath.name
+                person.append(name)
+            if ath.lifespan:
+                lifespan = etree.Element('lifespan')
+                lifespan.text = ath.lifespan
+                person.append(lifespan)
+            author.append(person)
+        persons.append(author)
+
+
+        # TODO: maybe add image and text tag?
 
         tree = etree.ElementTree(root)
         file_name = system_number + '.xml'
