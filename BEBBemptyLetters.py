@@ -87,9 +87,11 @@ class BEBBemptyLetters:
         """
         res = 0
 
-        for sys_no in alephX_dict:
+        for i, sys_no in enumerate(alephX_dict):
             if self.__generate_XML(sys_no, alephX_dict[sys_no]):
                 res = res + 1
+            print('\r{} of {}'.format(i+1, len(alephX_dict)), end='')
+        print()
 
         #print(etree.tostring(template.getroot(), pretty_print=True).decode('utf-8'))
 
