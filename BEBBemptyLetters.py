@@ -86,10 +86,9 @@ class BEBBemptyLetters:
         :return: int: number of files created.
         """
         res = 0
-        template = etree.tostring(etree.parse('input/sample.xml'))
 
         for sys_no in alephX_dict:
-            if self.__generate_XML(sys_no, alephX_dict[sys_no], etree.fromstring(template)):
+            if self.__generate_XML(sys_no, alephX_dict[sys_no]):
                 res = res + 1
 
         #print(etree.tostring(template.getroot(), pretty_print=True).decode('utf-8'))
@@ -99,11 +98,48 @@ class BEBBemptyLetters:
         #       - save to ./output/
         return res
 
-    def __generate_XML(self, system_number, alephx_path, xml_template):
-        root = xml_template
+    def __generate_XML(self, system_number, alephx_path):
         reader = alephmarcreader.alephxreader.AlephXReader(alephx_path)
+        root = etree.Element("letter")
+        metadata = etree.Element('metadata')
+        root.append(metadata)
+        persons = etree.Element('persons')
+        root.append(persons)
+        # TODO: maybe add image and text tag?
 
         root.set('catalogue_id', system_number)
+        root.set('date', reader.get_standardized_date()[0].get_standardized_date_string_KNORA()) # TODO: avoid potential array index out of bounds
+
+        for plc in reader.get_creation_place():
+            creation_place = etree.Element('creationplace')
+            name = etree.Element('place')
+            name.text = plc.name
+            creation_place.append(name)
+            gnd = etree.Element('gnd')
+            if plc.gnd:
+                gnd.text = plc.gnd
+            creation_place.append(gnd)
+            metadata.append(creation_place)
+
+        for shm in reader.get_shelfmark():
+            shelfmark = etree.Element('shelfmark')
+            institution = etree.Element('institution')
+            if shm.institution:
+                institution.text = shm.institution
+                shelfmark.append(institution)
+            collection = etree.Element('collection')
+            if shm.collection:
+                collection.text = shm.collection
+                shelfmark.append(collection)
+            country = etree.Element('country')
+            if shm.country:
+                country.text = shm.country
+                shelfmark.append(country)
+            identifier = etree.Element('identifier')
+            if shm.identifier:
+                identifier.text = shm.identifier
+                shelfmark.append(identifier)
+            metadata.append(shelfmark)
 
         tree = etree.ElementTree(root)
         file_name = system_number + '.xml'
