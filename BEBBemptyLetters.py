@@ -168,6 +168,44 @@ class BEBBemptyLetters:
             author.append(person)
         persons.append(author)
 
+        recipient = etree.Element('recipient')
+        for rec in reader.get_recipient():
+            person = etree.Element('person')
+            if rec.gnd:
+                gnd = etree.Element('gnd')
+                gnd.text = rec.gnd
+                person.append(gnd)
+            if rec.name:
+                name = etree.Element('name')
+                name.text = rec.name
+                person.append(name)
+            if rec.lifespan:
+                lifespan = etree.Element('lifespan')
+                lifespan.text = rec.lifespan
+                person.append(lifespan)
+            recipient.append(person)
+        persons.append(recipient)
+
+        mentioned = etree.Element('mentioned')
+        for p in reader.get_mentioned_person():
+            person = etree.Element('person')
+            if p.gnd:
+                gnd = etree.Element('gnd')
+                gnd.text = p.gnd
+                person.append(gnd)
+            if p.name:
+                name = etree.Element('name')
+                name.text = p.name
+                person.append(name)
+            if p.lifespan:
+                lifespan = etree.Element('lifespan')
+                lifespan.text = p.lifespan
+                person.append(lifespan)
+            mentioned.append(person)
+        persons.append(mentioned)
+
+        # TODO: mentioned institutions?!
+
 
         # TODO: maybe add image and text tag?
 
