@@ -4,6 +4,7 @@ import alephmarcreader
 from lxml import etree
 
 # TODO: Write readme.md
+# TODO: write documentation
 
 class BEBBemptyLetters:
 
@@ -101,12 +102,16 @@ class BEBBemptyLetters:
         return res
 
     def __generate_XML(self, system_number, alephx_path):
+        file_name = system_number + '.xml'
         reader = alephmarcreader.alephxreader.AlephXReader(alephx_path)
-        root = etree.Element("letter")
+        xsi = 'http://www.w3.org/2001/XMLSchema-instance'
+        schemaLocation = '../Schema_and_DTD/letter.xsd'
+        root = etree.Element("letter", attrib={"{" + xsi + "}noNamespaceSchemaLocation" : schemaLocation})
 
         metadata = etree.Element('metadata')
         root.append(metadata)
 
+        root.set('title', file_name)
         root.set('catalogue_id', system_number)
         root.set('date', reader.get_standardized_date()[0].get_standardized_date_string_KNORA()) # TODO: avoid potential array index out of bounds
 
@@ -210,7 +215,6 @@ class BEBBemptyLetters:
         # TODO: maybe add image and text tag?
 
         tree = etree.ElementTree(root)
-        file_name = system_number + '.xml'
         with open('output/xml/' + file_name, 'wb') as file:
             tree.write(file, pretty_print=True, encoding='utf-8', xml_declaration=True)
 
